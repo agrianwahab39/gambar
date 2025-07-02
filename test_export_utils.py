@@ -17,6 +17,7 @@ from export_utils import (
     export_comprehensive_package, generate_all_process_images
 )
 
+
 class TestExportUtils(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures"""
@@ -269,6 +270,40 @@ class TestExportUtils(unittest.TestCase):
             
             # Should attempt to create directories as needed
             self.assertIsInstance(result, dict)
+
+    @patch('visualization.create_feature_match_visualization')
+    @patch('visualization.create_block_match_visualization')
+    @patch('visualization.create_localization_visualization')
+    @patch('visualization.create_edge_visualization')
+    @patch('visualization.create_illumination_visualization')
+    @patch('visualization.create_frequency_visualization')
+    @patch('visualization.create_texture_visualization')
+    @patch('visualization.create_statistical_visualization')
+    @patch('visualization.create_quality_response_plot')
+    def test_generate_all_process_images_float_ela(self, mock_qr, mock_stat,
+                                                  mock_tex, mock_freq,
+                                                  mock_illum, mock_edge,
+                                                  mock_loc, mock_block,
+                                                  mock_feat):
+        """Ensure float ELA images are converted to uint8 when saved"""
+        analysis = {
+            'ela_image': np.random.rand(5, 5),
+            'jpeg_ghost': np.random.rand(5, 5),
+            'frequency_analysis': {},
+            'texture_analysis': {},
+            'edge_analysis': {},
+            'illumination_analysis': {},
+            'statistical_analysis': {'R_entropy':1,'G_entropy':1,'B_entropy':1},
+            'jpeg_analysis': {'quality_responses': []},
+            'localization_analysis': {},
+            'classification': {},
+            'noise_map': np.random.rand(5,5)
+        }
+        with tempfile.TemporaryDirectory() as out_dir:
+            result = generate_all_process_images(self.test_image, analysis, out_dir)
+            self.assertTrue(result)
+            with Image.open(os.path.join(out_dir, "02_error_level_analysis.png")) as saved:
+                self.assertNotEqual(saved.mode, 'F')
 
     @patch('visualization.create_feature_match_visualization')
     @patch('visualization.create_block_match_visualization')

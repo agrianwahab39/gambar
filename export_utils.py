@@ -256,82 +256,86 @@ def export_visualization_pdf(original_pil, analysis_results, output_filename="fo
         with PdfPages(output_filename) as pdf:
             # Page 1: Main Analysis
             fig1 = plt.figure(figsize=(16, 12))
-            gs1 = fig1.add_gridspec(3, 4, hspace=0.4, wspace=0.3)
-            fig1.suptitle("Forensic Image Analysis - Main Results", fontsize=16, fontweight='bold')
-            
-            # Row 1: Core Analysis
-            ax1 = fig1.add_subplot(gs1[0, 0])
-            ax1.imshow(original_pil)
-            ax1.set_title("Original Image", fontsize=12)
-            ax1.axis('off')
-            
-            ax2 = fig1.add_subplot(gs1[0, 1])
-            ela_display = ax2.imshow(analysis_results['ela_image'], cmap='hot')
-            ax2.set_title(f"ELA (μ={analysis_results['ela_mean']:.1f})", fontsize=12)
-            ax2.axis('off')
-            fig1.colorbar(ela_display, ax=ax2, fraction=0.046, pad=0.04)
-            
-            ax3 = fig1.add_subplot(gs1[0, 2])
-            create_feature_match_visualization(ax3, original_pil, analysis_results)
-            
-            ax4 = fig1.add_subplot(gs1[0, 3])
-            create_block_match_visualization(ax4, original_pil, analysis_results)
-            
-            # Row 2: Advanced Analysis
-            ax5 = fig1.add_subplot(gs1[1, 0])
-            create_frequency_visualization(ax5, analysis_results)
-            
-            ax6 = fig1.add_subplot(gs1[1, 1])
-            create_texture_visualization(ax6, analysis_results)
-            
-            ax7 = fig1.add_subplot(gs1[1, 2])
-            ghost_display = ax7.imshow(analysis_results['jpeg_ghost'], cmap='hot')
-            ax7.set_title(f"JPEG Ghost", fontsize=12)
-            ax7.axis('off')
-            fig1.colorbar(ghost_display, ax=ax7, fraction=0.046, pad=0.04)
-            
-            ax8 = fig1.add_subplot(gs1[1, 3])
-            create_technical_metrics_plot(ax8, analysis_results)
-            
-            # Row 3: Summary
-            ax9 = fig1.add_subplot(gs1[2, :])
-            create_summary_report(ax9, analysis_results)
-            
-            pdf.savefig(fig1, bbox_inches='tight')
-            plt.close(fig1)
-            
+            try:
+                gs1 = fig1.add_gridspec(3, 4, hspace=0.4, wspace=0.3)
+                fig1.suptitle("Forensic Image Analysis - Main Results", fontsize=16, fontweight='bold')
+
+                # Row 1: Core Analysis
+                ax1 = fig1.add_subplot(gs1[0, 0])
+                ax1.imshow(original_pil)
+                ax1.set_title("Original Image", fontsize=12)
+                ax1.axis('off')
+
+                ax2 = fig1.add_subplot(gs1[0, 1])
+                ela_display = ax2.imshow(analysis_results['ela_image'], cmap='hot')
+                ax2.set_title(f"ELA (μ={analysis_results['ela_mean']:.1f})", fontsize=12)
+                ax2.axis('off')
+                fig1.colorbar(ela_display, ax=ax2, fraction=0.046, pad=0.04)
+
+                ax3 = fig1.add_subplot(gs1[0, 2])
+                create_feature_match_visualization(ax3, original_pil, analysis_results)
+
+                ax4 = fig1.add_subplot(gs1[0, 3])
+                create_block_match_visualization(ax4, original_pil, analysis_results)
+
+                # Row 2: Advanced Analysis
+                ax5 = fig1.add_subplot(gs1[1, 0])
+                create_frequency_visualization(ax5, analysis_results)
+
+                ax6 = fig1.add_subplot(gs1[1, 1])
+                create_texture_visualization(ax6, analysis_results)
+
+                ax7 = fig1.add_subplot(gs1[1, 2])
+                ghost_display = ax7.imshow(analysis_results['jpeg_ghost'], cmap='hot')
+                ax7.set_title("JPEG Ghost", fontsize=12)
+                ax7.axis('off')
+                fig1.colorbar(ghost_display, ax=ax7, fraction=0.046, pad=0.04)
+
+                ax8 = fig1.add_subplot(gs1[1, 3])
+                create_technical_metrics_plot(ax8, analysis_results)
+
+                # Row 3: Summary
+                ax9 = fig1.add_subplot(gs1[2, :])
+                create_summary_report(ax9, analysis_results)
+
+                pdf.savefig(fig1, bbox_inches='tight')
+            finally:
+                plt.close(fig1)
+
             # Page 2: Detailed Analysis
             fig2 = plt.figure(figsize=(16, 12))
-            gs2 = fig2.add_gridspec(2, 3, hspace=0.4, wspace=0.3)
-            fig2.suptitle("Forensic Image Analysis - Detailed Results", fontsize=16, fontweight='bold')
-            
-            # Detailed visualizations
-            ax10 = fig2.add_subplot(gs2[0, 0])
-            create_edge_visualization(ax10, original_pil, analysis_results)
-            
-            ax11 = fig2.add_subplot(gs2[0, 1])
-            create_illumination_visualization(ax11, original_pil, analysis_results)
-            
-            ax12 = fig2.add_subplot(gs2[0, 2])
-            create_statistical_visualization(ax12, analysis_results)
-            
-            ax13 = fig2.add_subplot(gs2[1, 0])
-            create_quality_response_plot(ax13, analysis_results)
-            
-            ax14 = fig2.add_subplot(gs2[1, 1])
-            ax14.imshow(analysis_results['noise_map'], cmap='gray')
-            ax14.set_title(f"Noise Map", fontsize=12)
-            ax14.axis('off')
-            
-            ax15 = fig2.add_subplot(gs2[1, 2])
-            combined_heatmap = create_advanced_combined_heatmap(analysis_results, original_pil.size)
-            ax15.imshow(original_pil, alpha=0.3)
-            ax15.imshow(combined_heatmap, cmap='hot', alpha=0.7)
-            ax15.set_title("Combined Suspicion Heatmap", fontsize=12)
-            ax15.axis('off')
-            
-            pdf.savefig(fig2, bbox_inches='tight')
-            plt.close(fig2)
+            try:
+                gs2 = fig2.add_gridspec(2, 3, hspace=0.4, wspace=0.3)
+                fig2.suptitle("Forensic Image Analysis - Detailed Results", fontsize=16, fontweight='bold')
+
+                # Detailed visualizations
+                ax10 = fig2.add_subplot(gs2[0, 0])
+                create_edge_visualization(ax10, original_pil, analysis_results)
+
+                ax11 = fig2.add_subplot(gs2[0, 1])
+                create_illumination_visualization(ax11, original_pil, analysis_results)
+
+                ax12 = fig2.add_subplot(gs2[0, 2])
+                create_statistical_visualization(ax12, analysis_results)
+
+                ax13 = fig2.add_subplot(gs2[1, 0])
+                create_quality_response_plot(ax13, analysis_results)
+
+                ax14 = fig2.add_subplot(gs2[1, 1])
+                ax14.imshow(analysis_results['noise_map'], cmap='gray')
+                ax14.set_title("Noise Map", fontsize=12)
+                ax14.axis('off')
+
+                ax15 = fig2.add_subplot(gs2[1, 2])
+                combined_heatmap = create_advanced_combined_heatmap(analysis_results, original_pil.size)
+                ax15.imshow(original_pil, alpha=0.3)
+                ax15.imshow(combined_heatmap, cmap='hot', alpha=0.7)
+                ax15.set_title("Combined Suspicion Heatmap", fontsize=12)
+                ax15.axis('off')
+
+                pdf.savefig(fig2, bbox_inches='tight')
+            finally:
+                plt.close(fig2)
         
         print(f"📊 PDF visualization saved as '{output_filename}'")
         return output_filename
@@ -672,6 +676,7 @@ def add_dfrws_examination_section(doc, analysis_results, original_pil):
             ela_array = (ela_array * 255).clip(0, 255).astype(np.uint8)
         ela_img = Image.fromarray(ela_array)
         ela_img.save(img_byte_arr, format='PNG')
+
         img_byte_arr = img_byte_arr.getvalue()
         doc.add_picture(io.BytesIO(img_byte_arr), width=Inches(5.0))
         
@@ -1619,6 +1624,7 @@ def generate_all_process_images(original_pil, analysis_results, output_dir):
         elif ela_img.mode == 'F':
             ela_img = Image.fromarray(np.array(ela_img).astype(np.uint8))
         ela_img.save(os.path.join(output_dir, "02_error_level_analysis.png"))
+        ela_img.close()
     
     # 3. Feature Matching
     fig, ax = plt.subplots(figsize=(10, 8))

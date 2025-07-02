@@ -442,7 +442,14 @@ def get_enhanced_confidence_level(score):
 def get_enhanced_copy_move_details(results):
     details = []
     if results['ransac_inliers'] > 0: details.append(f"✓ RANSAC verification: {results['ransac_inliers']} geometric matches")
-    if results['geometric_transform'] is not None: details.append(f"✓ Geometric transformation: {results['geometric_transform'][0]}")
+    transform_val = results.get('geometric_transform')
+    if transform_val is not None:
+        if isinstance(transform_val, (list, tuple)):
+            transform_type = transform_val[0] if transform_val else None
+        else:
+            transform_type = transform_val
+        if transform_type is not None:
+            details.append(f"✓ Geometric transformation: {transform_type}")
     if len(results['block_matches']) > 0: details.append(f"✓ Block matching: {len(results['block_matches'])} identical blocks")
     if results['sift_matches'] > 10: details.append(f"✓ Feature matching: {results['sift_matches']} SIFT correspondences")
     if results['ela_regional_stats']['regional_inconsistency'] < 0.3: details.append("✓ Consistent ELA patterns (same source content)")

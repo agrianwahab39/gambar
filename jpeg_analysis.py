@@ -40,11 +40,10 @@ def advanced_jpeg_analysis(image_pil, qualities=range(60, 96, 10)):
         try:
             # Compress and decompress
             image_pil.save(temp_file, 'JPEG', quality=quality)
-            recompressed = Image.open(temp_file)
-            
-            # Calculate difference
-            diff = ImageChops.difference(image_pil, recompressed)
-            diff_array = np.array(diff.convert('L'))
+            with Image.open(temp_file) as recompressed:
+                # Calculate difference
+                diff = ImageChops.difference(image_pil, recompressed)
+                diff_array = np.array(diff.convert('L'))
             
             # Response metrics
             response_mean = np.mean(diff_array)
@@ -89,7 +88,7 @@ def advanced_jpeg_analysis(image_pil, qualities=range(60, 96, 10)):
     
     # Detect double compression
     response_diff = np.diff(responses)
-    double_compression_indicator = np.std(response_diff)
+    double_compression_indicator = np.std(response_diff) if len(response_diff) > 0 else 0.0
     
     # Find optimal quality (minimum response)
     min_response_idx = np.argmin(responses)
