@@ -370,5 +370,28 @@ class TestVisualization(unittest.TestCase):
         self.assertEqual(self.mock_analysis_results['jpeg_ghost'].ndim, 2)
         self.assertEqual(self.mock_analysis_results['noise_map'].ndim, 2)
 
+    def test_export_kmeans_visualization(self):
+        """Test export_kmeans_visualization success and failure"""
+        from visualization import export_kmeans_visualization
+        # Failure when data missing
+        result_none = export_kmeans_visualization(self.test_image, {}, "test.jpg")
+        self.assertIsNone(result_none)
+
+        # Success with minimal data
+        data = {
+            'localization_analysis': {
+                'kmeans_localization': {
+                    'localization_map': np.zeros((10,10)),
+                    'tampering_mask': np.zeros((10,10))
+                },
+                'combined_tampering_mask': np.zeros((10,10))
+            }
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_file = os.path.join(tmpdir, "km.png")
+            result = export_kmeans_visualization(self.test_image, data, out_file)
+            self.assertEqual(result, out_file)
+            self.assertTrue(os.path.exists(out_file))
+
 if __name__ == '__main__':
     unittest.main()

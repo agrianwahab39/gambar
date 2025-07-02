@@ -124,6 +124,42 @@ class TestFeatureDetection(unittest.TestCase):
         self.assertEqual(inliers, 0)
         self.assertIsNone(transform)
 
+    @patch('cv2.FlannBasedMatcher')
+    @patch('cv2.findHomography')
+    def test_match_sift_features_homography(self, mock_homography, mock_flann):
+        """Test SIFT matching path when homography succeeds"""
+        mock_matcher = MagicMock()
+        mock_flann.return_value = mock_matcher
+        m = MagicMock()
+        m.trainIdx = 1
+        m.distance = 0.5
+        mock_matcher.knnMatch.return_value = [[m, m]]
+        mock_homography.return_value = (np.eye(3), np.array([[1],[1]]))
+        matches, inliers, transform = match_sift_features(
+            self.mock_keypoints, self.mock_descriptors, 0.75, 40, 5.0, 1)
+        self.assertEqual(inliers, 2)
+        self.assertEqual(transform[0], 'homography')
+
+    @patch('cv2.FlannBasedMatcher')
+    @patch('cv2.estimateAffine2D')
+    @patch('cv2.findHomography')
+    @patch('cv2.estimateAffinePartial2D')
+    def test_match_sift_features_no_inliers(self, mock_partial, mock_homography,
+                                            mock_affine, mock_flann):
+        """Return no transform when all estimations fail"""
+        mock_matcher = MagicMock()
+        mock_flann.return_value = mock_matcher
+        m = MagicMock()
+        m.trainIdx = 1
+        m.distance = 0.5
+        mock_matcher.knnMatch.return_value = [[m, m]]
+        mock_affine.return_value = (None, None)
+        mock_homography.return_value = (None, None)
+        mock_partial.return_value = (None, None)
+        matches, inliers, transform = match_sift_features(
+            self.mock_keypoints, self.mock_descriptors, 0.75, 40, 5.0, 1)
+        self.assertIsNone(transform)
+
     @patch('cv2.BFMatcher')
     def test_match_orb_features(self, mock_bf_matcher):
         """Test ORB feature matching"""

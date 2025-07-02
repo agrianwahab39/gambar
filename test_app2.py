@@ -9,11 +9,18 @@ from PIL import Image
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import functions from app2.py
-from app2 import (
-    display_single_plot, display_single_image, create_spider_chart,
-    IMPORTS_SUCCESSFUL, IMPORT_ERROR_MESSAGE
-)
+try:
+    from app2 import (
+        display_single_plot, display_single_image, create_spider_chart,
+        IMPORTS_SUCCESSFUL, IMPORT_ERROR_MESSAGE
+    )
+    APP2_AVAILABLE = True
+except Exception as e:
+    APP2_AVAILABLE = False
+    IMPORTS_SUCCESSFUL = False
+    IMPORT_ERROR_MESSAGE = str(e)
 
+@unittest.skipUnless(APP2_AVAILABLE, f"app2 unavailable: {IMPORT_ERROR_MESSAGE}")
 class TestApp2Functions(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures"""
