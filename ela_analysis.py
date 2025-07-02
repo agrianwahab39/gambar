@@ -23,13 +23,12 @@ def perform_multi_quality_ela(image_pil, qualities=ELA_QUALITIES, scale_factor=E
     for q in qualities:
         # Save and reload
         image_rgb.save(temp_filename, 'JPEG', quality=q)
-        compressed_rgb = Image.open(temp_filename)
-        
-        # Calculate difference
-        diff_rgb = ImageChops.difference(image_rgb, compressed_rgb)
-        diff_l = diff_rgb.convert('L')
-        ela_np = np.array(diff_l, dtype=float)
-        
+        with Image.open(temp_filename) as compressed_rgb:
+            # Calculate difference
+            diff_rgb = ImageChops.difference(image_rgb, compressed_rgb)
+            diff_l = diff_rgb.convert('L')
+            ela_np = np.array(diff_l, dtype=float)
+
         # Scale
         scaled_ela = np.clip(ela_np * scale_factor, 0, 255)
         ela_results.append(scaled_ela)

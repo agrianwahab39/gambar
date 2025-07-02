@@ -709,7 +709,11 @@ def add_dfrws_examination_section(doc, analysis_results, original_pil):
         doc.add_paragraph(fm_caption, style='Caption')
         
         if analysis_results['ransac_inliers'] > 0:
-            transform_type = analysis_results.get('geometric_transform', [None])[0]
+            transform_val = analysis_results.get('geometric_transform')
+            if isinstance(transform_val, (list, tuple)):
+                transform_type = transform_val[0] if transform_val else None
+            else:
+                transform_type = transform_val
             doc.add_paragraph(
                 f"Terdeteksi {analysis_results['ransac_inliers']} kecocokan fitur yang terverifikasi "
                 f"dengan RANSAC. Tipe transformasi: {transform_type if transform_type else 'Tidak terdeteksi'}."

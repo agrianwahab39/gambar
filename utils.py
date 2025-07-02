@@ -14,6 +14,8 @@ warnings.filterwarnings('ignore')
 
 def detect_outliers_iqr(data, factor=1.5):
     """Detect outliers using IQR method"""
+    if len(data) == 0:
+        return np.array([], dtype=int)
     Q1 = np.percentile(data, 25)
     Q3 = np.percentile(data, 75)
     IQR = Q3 - Q1
