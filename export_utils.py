@@ -667,7 +667,10 @@ def add_dfrws_examination_section(doc, analysis_results, original_pil):
     # Add ELA image
     if 'ela_image' in analysis_results:
         img_byte_arr = io.BytesIO()
-        ela_img = Image.fromarray(np.array(analysis_results['ela_image']))
+        ela_array = np.array(analysis_results['ela_image'])
+        if np.issubdtype(ela_array.dtype, np.floating):
+            ela_array = (ela_array * 255).clip(0, 255).astype(np.uint8)
+        ela_img = Image.fromarray(ela_array)
         ela_img.save(img_byte_arr, format='PNG')
         img_byte_arr = img_byte_arr.getvalue()
         doc.add_picture(io.BytesIO(img_byte_arr), width=Inches(5.0))
@@ -706,7 +709,11 @@ def add_dfrws_examination_section(doc, analysis_results, original_pil):
         doc.add_paragraph(fm_caption, style='Caption')
         
         if analysis_results['ransac_inliers'] > 0:
-            transform_type = analysis_results.get('geometric_transform', [None])[0]
+            transform_val = analysis_results.get('geometric_transform')
+            if isinstance(transform_val, (list, tuple)):
+                transform_type = transform_val[0] if transform_val else None
+            else:
+                transform_type = transform_val
             doc.add_paragraph(
                 f"Terdeteksi {analysis_results['ransac_inliers']} kecocokan fitur yang terverifikasi "
                 f"dengan RANSAC. Tipe transformasi: {transform_type if transform_type else 'Tidak terdeteksi'}."
@@ -1605,8 +1612,14 @@ def generate_all_process_images(original_pil, analysis_results, output_dir):
     if 'ela_image' in analysis_results:
         ela_img = analysis_results['ela_image']
         if not isinstance(ela_img, Image.Image):
-            ela_img = Image.fromarray(np.array(ela_img))
+            ela_arr = np.array(ela_img)
+            if np.issubdtype(ela_arr.dtype, np.floating):
+                ela_arr = (ela_arr * 255).clip(0, 255).astype(np.uint8)
+            ela_img = Image.fromarray(ela_arr)
+        elif ela_img.mode == 'F':
+            ela_img = Image.fromarray(np.array(ela_img).astype(np.uint8))
         ela_img.save(os.path.join(output_dir, "02_error_level_analysis.png"))
+        ela_img.close()
     
     # 3. Feature Matching
     fig, ax = plt.subplots(figsize=(10, 8))

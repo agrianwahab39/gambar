@@ -67,6 +67,9 @@ class TestUtils(unittest.TestCase):
         outliers_custom = detect_outliers_iqr(self.test_data, factor=3.0)
         self.assertTrue(len(outliers_custom) <= len(outliers))  # Stricter threshold
 
+        # Empty array should return empty array
+        self.assertEqual(len(detect_outliers_iqr(np.array([]))), 0)
+
     def test_calculate_skewness(self):
         """Test skewness calculation"""
         # Test with normal data
@@ -96,6 +99,12 @@ class TestUtils(unittest.TestCase):
         single_value = np.array([5])
         kurtosis_single = calculate_kurtosis(single_value)
         self.assertEqual(kurtosis_single, 0)
+
+    def test_skewness_kurtosis_empty(self):
+        """Functions should handle empty arrays gracefully"""
+        empty = np.array([])
+        self.assertEqual(calculate_skewness(empty), 0)
+        self.assertEqual(calculate_kurtosis(empty), 0)
 
     def test_normalize_array(self):
         """Test array normalization"""
