@@ -97,6 +97,12 @@ class TestUtils(unittest.TestCase):
         kurtosis_single = calculate_kurtosis(single_value)
         self.assertEqual(kurtosis_single, 0)
 
+    def test_skewness_kurtosis_empty(self):
+        """Functions should handle empty arrays gracefully"""
+        empty = np.array([])
+        self.assertEqual(calculate_skewness(empty), 0)
+        self.assertEqual(calculate_kurtosis(empty), 0)
+
     def test_normalize_array(self):
         """Test array normalization"""
         # Test with normal data
