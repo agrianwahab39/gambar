@@ -676,6 +676,7 @@ def add_dfrws_examination_section(doc, analysis_results, original_pil):
             ela_array = (ela_array * 255).clip(0, 255).astype(np.uint8)
         ela_img = Image.fromarray(ela_array)
         ela_img.save(img_byte_arr, format='PNG')
+
         img_byte_arr = img_byte_arr.getvalue()
         doc.add_picture(io.BytesIO(img_byte_arr), width=Inches(5.0))
         
