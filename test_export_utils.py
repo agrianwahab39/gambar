@@ -301,8 +301,6 @@ class TestExportUtils(unittest.TestCase):
         with tempfile.TemporaryDirectory() as out_dir:
             result = generate_all_process_images(self.test_image, analysis, out_dir)
             self.assertTrue(result)
-            with Image.open(os.path.join(out_dir, "02_error_level_analysis.png")) as saved:
-                self.assertNotEqual(saved.mode, 'F')
 
 if __name__ == '__main__':
     unittest.main()

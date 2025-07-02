@@ -1619,7 +1619,6 @@ def generate_all_process_images(original_pil, analysis_results, output_dir):
         elif ela_img.mode == 'F':
             ela_img = Image.fromarray(np.array(ela_img).astype(np.uint8))
         ela_img.save(os.path.join(output_dir, "02_error_level_analysis.png"))
-        ela_img.close()
     
     # 3. Feature Matching
     fig, ax = plt.subplots(figsize=(10, 8))
