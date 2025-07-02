@@ -14,6 +14,8 @@ warnings.filterwarnings('ignore')
 
 def detect_outliers_iqr(data, factor=1.5):
     """Detect outliers using IQR method"""
+    if len(data) == 0:
+        return np.array([], dtype=int)
     Q1 = np.percentile(data, 25)
     Q3 = np.percentile(data, 75)
     IQR = Q3 - Q1
@@ -22,7 +24,9 @@ def detect_outliers_iqr(data, factor=1.5):
     return np.where((data < lower_bound) | (data > upper_bound))[0]
 
 def calculate_skewness(data):
-    """Calculate skewness"""
+    """Calculate skewness with empty-array handling"""
+    if len(data) == 0:
+        return 0
     mean = np.mean(data)
     std = np.std(data)
     if std == 0:
@@ -30,7 +34,9 @@ def calculate_skewness(data):
     return np.mean(((data - mean) / std) ** 3)
 
 def calculate_kurtosis(data):
-    """Calculate kurtosis"""
+    """Calculate kurtosis with empty-array handling"""
+    if len(data) == 0:
+        return 0
     mean = np.mean(data)
     std = np.std(data)
     if std == 0:
